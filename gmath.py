@@ -10,26 +10,70 @@ SPECULAR_EXP = 4
 
 #lighting functions
 def get_lighting(normal, view, ambient, light, areflect, dreflect, sreflect ):
-    pass
+    color = [0, 0, 0]
+    amb = calculate_ambient(ambient, areflect)
+    diff = calculate_diffuse(light, dreflect, normal)
+    spec = calculate_specular(light, sreflect, view, normal)
+    i = 0
+    while (i < 3):
+        color[i] = amb[i] + diff[i] + spec[i]
+        i = i + 1
+    return color
 
 def calculate_ambient(alight, areflect):
-    pass
+    a = [0, 0, 0]
+    i = 0
+    while (i < 3):
+        a[i] = alight[i] * areflect[i]
+        i = i + 1
+    return limit_color(a)
 
 def calculate_diffuse(light, dreflect, normal):
-    pass
+    d = [0, 0, 0]
+    i = 0
+    dp = dot_product(normalize(light[LOCATION]), normalize(normal))
+    while (i < 3):
+        d[i] = light[COLOR][i] * dreflect[i] * dp
+        i = i + 1
+    return limit_color(d)
 
 def calculate_specular(light, sreflect, view, normal):
-    pass
+    s = [0, 0, 0]
+    cosalpha = [0, 0, 0]
+    i = 0
+    dp = dot_product(normalize(normal), normalize(light[LOCATION]))
+    while (i < 3):
+        cosalpha[i] = 2 * dp * normal[i] - light[LOCATION][i]
+        i = i + 1
+    dp2 = dot_product(cosalpha, view)
+    i = 0
+    while (i < 3):
+        s[i] = light[COLOR][i] * sreflect[i] * (dp ** SPECULAR_EXP)
+        i = i + 1
+    return limit_color(s)
 
 def limit_color(color):
-    pass
+    i = 0
+    while (i < 3):
+        color[i] = int(color[i])
+        if (color[i] > 255):
+            color[i] = 255
+        if color[i] < 0:
+            color[i] = 0
+        i = i + 1
+    return color
 
 #vector functions
 def normalize(vector):
-    pass
+    magnitude = math.sqrt(vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2)
+    i = 0
+    while (i < 3):
+        vector[i] = vector[i] / magnitude
+        i = i + 1
+    return vector
 
 def dot_product(a, b):
-    pass
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 
 def calculate_normal(polygons, i):
 
